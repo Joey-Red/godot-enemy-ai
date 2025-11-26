@@ -1,0 +1,23 @@
+[gd_scene load_steps=3 format=3 uid="uid://c1hs512dj70sh"]
+
+[ext_resource type="Script" uid="uid://41nxfogmit5x" path="res://UI-HUD/Enemy/enemy_healthbar_3d.gd" id="1_thnx6"]
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_thnx6"]
+viewport_path = NodePath("SubViewport")
+
+[node name="EnemyHealthbar3D" type="Sprite3D"]
+billboard = 1
+no_depth_test = true
+texture = SubResource("ViewportTexture_thnx6")
+script = ExtResource("1_thnx6")
+
+[node name="SubViewport" type="SubViewport" parent="."]
+transparent_bg = true
+size = Vector2i(200, 40)
+
+[node name="ProgressBar" type="ProgressBar" parent="SubViewport"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2

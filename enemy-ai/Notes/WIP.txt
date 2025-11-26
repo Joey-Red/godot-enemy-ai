@@ -1,0 +1,25 @@
+Fixed issues:
+	
+Projectile only shoots straight, not up/down.
+-Projectile Now Shoots where aiming (vertically)
+
+Sword only swings straight, not up and down
+-Sword now can be aimed vertically.
+
+
+Need to create a player spawner, and remove the script attached to Main level
+-done
+
+Work on Simple Enemy AI, Animations, etc. how smart?
+- have enemy ai that follow,
+
+TODO ENEMY AI: right now they just follow, super basic. 
+
+Enemy AI - when player dies, they do not retarget.
+- They now retarget
+
+TODO: make Sure player has no control after death until respawn.
+- WASD disabled, added death animation so mouse control is fine ig.
+
+maybe add death/respawn screen
+- Added death fade out, respawn fade in, button to respawn etc.

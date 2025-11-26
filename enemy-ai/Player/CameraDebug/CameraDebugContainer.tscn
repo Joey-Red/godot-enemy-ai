@@ -1,0 +1,21 @@
+[gd_scene load_steps=2 format=3 uid="uid://dc53ufoxmbgbu"]
+
+[ext_resource type="Script" uid="uid://btxotb8ccswdy" path="res://Player/CameraDebug/debug_camera_view.gd" id="1_tbej4"]
+
+[node name="CameraDebugContainer" type="Node3D"]
+
+[node name="DebugLayer" type="CanvasLayer" parent="."]
+
+[node name="DebugView" type="SubViewportContainer" parent="DebugLayer"]
+offset_right = 500.0
+offset_bottom = 300.0
+script = ExtResource("1_tbej4")
+
+[node name="SubViewport" type="SubViewport" parent="DebugLayer/DebugView"]
+handle_input_locally = false
+size = Vector2i(500, 300)
+render_target_update_mode = 4
+
+[node name="Camera3D" type="Camera3D" parent="DebugLayer/DebugView/SubViewport"]
+transform = Transform3D(1, 0, 0, 0, 0.90635943, 0.42250755, 0, -0.42250755, 0.90635943, 0, 6.9171085, 10.806967)
+top_level = true

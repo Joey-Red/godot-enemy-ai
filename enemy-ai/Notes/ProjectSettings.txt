@@ -1,0 +1,5 @@
+Changed Physics Interpolation to on
+# Project settings and set Physics Interpolation to ON in the Physics -> Common settings
+# Also disabled Physics Interpolation on Player Camera
+
+Turned Unused Signal Warnings off for Signal Bus

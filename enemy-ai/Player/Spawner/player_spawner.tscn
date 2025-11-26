@@ -1,0 +1,10 @@
+[gd_scene load_steps=4 format=3 uid="uid://fl35pvoq34i8"]
+
+[ext_resource type="Script" uid="uid://tr3l547xcikg" path="res://Player/Spawner/PlayerSpawner.gd" id="1_sxk6o"]
+[ext_resource type="PackedScene" uid="uid://bmqc1pownjiil" path="res://Player/MainPlayerScn/Player.tscn" id="2_qf01b"]
+[ext_resource type="PackedScene" uid="uid://bc5fkfmane0wj" path="res://UI-HUD/Player/PlayerHUD.tscn" id="3_trpi2"]
+
+[node name="PlayerSpawner" type="Marker3D"]
+script = ExtResource("1_sxk6o")
+player_scene = ExtResource("2_qf01b")
+hud_scene = ExtResource("3_trpi2")
