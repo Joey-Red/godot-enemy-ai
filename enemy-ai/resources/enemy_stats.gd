@@ -17,3 +17,4 @@ class_name EnemyStats
 @export var enemy_name: String = "Enemy"
 @export var model_scene: PackedScene  
 @export var scale: float = 1.0
+@export var model_rotation_y: float = 0.0

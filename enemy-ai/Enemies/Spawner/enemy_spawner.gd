@@ -2,7 +2,9 @@ class_name EnemySpawner
 extends Marker3D
 
 @export_group("Spawner Settings")
-@export var enemy_scene: PackedScene
+# List of enemies to spawn. Create "New SpawnDefinition" entries here.
+@export var spawn_list: Array[SpawnDefinition] 
+
 @export var spawn_interval: float = 4.0
 @export var spawn_radius: float = 3.0
 @export var max_active_enemies: int = 5
@@ -19,6 +21,9 @@ func _ready():
 	spawn_timer.timeout.connect(_on_spawn_timer_timeout)
 	add_child(spawn_timer)
 	
+	# Randomize seed for RNG
+	randomize()
+	
 	# Spawn the first one immediately
 	call_deferred("_spawn_enemy")
 
@@ -27,29 +32,63 @@ func _on_spawn_timer_timeout():
 		_spawn_enemy()
 
 func _spawn_enemy():
-	if not enemy_scene:
+	# 1. Validation
+	# CRITICAL FIX: Ensure the Spawner is still inside the Scene Tree (has a parent)
+	# This prevents crashes during Level Unloads/Resets when the player dies.
+	if not is_inside_tree() or not get_parent():
 		return
 
-	var enemy_instance = enemy_scene.instantiate()
+	if spawn_list.is_empty():
+		return
+
+	# 2. Pick a random enemy based on weights
+	var selected_spawn = _get_random_spawn_from_weights()
+	if not selected_spawn or not selected_spawn.enemy_scene:
+		return
+
+	# 3. Instantiate
+	var enemy_instance = selected_spawn.enemy_scene.instantiate()
+	if not enemy_instance:
+		return
 	
-	# 1. Calculate random position offset
+	# --- NEW: Inject Stats Override ---
+	# If the SpawnDefinition has specific stats (e.g., SkeletonStats), 
+	# we assign them BEFORE adding the child. The DummyEnemy._ready() will use them.
+	if selected_spawn.stats_override and "stats" in enemy_instance:
+		enemy_instance.stats = selected_spawn.stats_override
+
+	# 4. Calculate random position offset
 	var random_x = randf_range(-spawn_radius, spawn_radius)
 	var random_z = randf_range(-spawn_radius, spawn_radius)
 	var spawn_pos = global_position + Vector3(random_x, 0, random_z)
 	
-	# 2. Add to scene
-	# We add to the parent (the level) so the enemy isn't stuck inside the Spawner node
+	# 5. Add to scene
 	get_parent().add_child(enemy_instance)
 	enemy_instance.global_position = spawn_pos
 	
-	# 3. Track enemy count
+	# 6. Track enemy count
 	current_enemy_count += 1
 	
-	# 4. Listen for death to decrease count
+	# 7. Listen for death to decrease count
+	# NOTE: Ensure your path matches your scene structure!
 	if enemy_instance.has_node("Components/HealthComponent"):
-		# Connect to the 'on_death' signal of the enemy's health component
-		# We use bind() if we wanted to know WHICH enemy died, but here simple math works
 		enemy_instance.get_node("Components/HealthComponent").on_death.connect(_on_enemy_death)
 
 func _on_enemy_death():
 	current_enemy_count = max(0, current_enemy_count - 1)
+
+# --- WEIGHTED RANDOM LOGIC ---
+func _get_random_spawn_from_weights() -> SpawnDefinition:
+	var total_weight = 0
+	for item in spawn_list:
+		total_weight += item.spawn_weight
+	
+	var random_value = randi_range(1, total_weight)
+	var current_weight = 0
+	
+	for item in spawn_list:
+		current_weight += item.spawn_weight
+		if random_value <= current_weight:
+			return item
+	
+	return spawn_list[0] # Fallback

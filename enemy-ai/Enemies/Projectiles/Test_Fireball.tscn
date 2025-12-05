@@ -1,0 +1,27 @@
+[gd_scene load_steps=6 format=3 uid="uid://cjcti8wwatp0g"]
+
+[ext_resource type="Script" uid="uid://dijxjg6eck3jp" path="res://Enemies/Projectiles/test_fireball.gd" id="1_30sn8"]
+[ext_resource type="Texture2D" uid="uid://bjr1m4dasu6fc" path="res://assets/256x256/Roofs/Roof 7 - 256x256.png" id="1_f7efg"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_30sn8"]
+radius = 0.25
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_lci5h"]
+albedo_texture = ExtResource("1_f7efg")
+emission_enabled = true
+emission = Color(0.7019608, 0.18431373, 0, 1)
+emission_energy_multiplier = 6.58
+
+[sub_resource type="SphereMesh" id="SphereMesh_dqqfg"]
+material = SubResource("StandardMaterial3D_lci5h")
+radius = 0.25
+height = 0.5
+
+[node name="Node3D" type="Area3D"]
+script = ExtResource("1_30sn8")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("SphereShape3D_30sn8")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("SphereMesh_dqqfg")

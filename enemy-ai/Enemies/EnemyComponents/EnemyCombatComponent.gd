@@ -10,7 +10,11 @@ signal on_attack_performed
 @export var attack_cooldown: float = 1.5
 
 @export_group("References")
-@export var actor: Node3D # The Enemy Root
+@export var actor: Node3D # The Enemy Root (BaseEnemy)
+
+# --- RANGED DATA ---
+var projectile_scene: PackedScene = null
+var projectile_speed: float = 0.0
 
 var target: Node3D
 var _can_attack: bool = true
@@ -24,11 +28,16 @@ func _ready():
 	_timer.timeout.connect(_on_cooldown_finished)
 	add_child(_timer)
 
-# --- NEW FUNCTION FOR RESOURCE SYSTEM ---
-func initialize(new_damage: float, new_range: float, new_rate: float):
+# --- UPDATED INITIALIZE FUNCTION ---
+# We use default values (= null) so this still works for melee enemies too
+func initialize(new_damage: float, new_range: float, new_rate: float, proj_scene: PackedScene = null, proj_speed: float = 0.0):
 	damage = new_damage
 	attack_range = new_range
 	attack_cooldown = new_rate
+	
+	# Store Ranged Data
+	projectile_scene = proj_scene
+	projectile_speed = proj_speed
 	
 	# If the timer is already created, we must update its wait_time
 	if _timer:
@@ -59,6 +68,40 @@ func _perform_attack():
 	# Emit signal so BaseEnemy can play animation/sound
 	on_attack_performed.emit()
 	
-	# 4. Deal Damage to Target
+	# 4. DECIDE ATTACK TYPE
+	if projectile_scene:
+		_spawn_projectile()
+	else:
+		_perform_melee_hit()
+
+# --- MELEE LOGIC ---
+func _perform_melee_hit():
+	# Instant damage application
 	if target.has_method("take_damage"):
 		target.take_damage(damage)
+
+# --- RANGED LOGIC ---
+func _spawn_projectile():
+	if not projectile_scene: return
+	
+	# 1. Instantiate the bullet
+	var new_proj = projectile_scene.instantiate()
+	
+	# 2. Add to the MAIN SCENE (Not the enemy, so it doesn't move with the enemy)
+	get_tree().current_scene.add_child(new_proj)
+	
+	# 3. Position it (Start at head height, e.g., +1.5m up)
+	var spawn_pos = actor.global_position
+	spawn_pos.y += 1
+	new_proj.global_position = spawn_pos
+	
+	# 4. Aim at target
+	# We aim at the target's center (assuming target origin is at feet, we look up slightly)
+	var target_aim_pos = target.global_position
+	target_aim_pos.y += .5 # Aim for the chest
+	new_proj.look_at(target_aim_pos)
+	
+	# 5. Configure Projectile
+	# Requires the projectile script to have an 'initialize' function
+	if new_proj.has_method("initialize"):
+		new_proj.initialize(damage, projectile_speed)

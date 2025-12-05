@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://b6yfci4ywu0o0"]
+
+[ext_resource type="PackedScene" uid="uid://cgm50qqymcboy" path="res://assets/KayKit_Skeletons_1.1_FREE/characters/gltf/Skeleton_Mage.glb" id="1_y5enc"]
+
+[node name="SkeletonMageBase" type="Node3D"]
+
+[node name="Skeleton_Mage" parent="." instance=ExtResource("1_y5enc")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, -1, 0)
+
+[editable path="Skeleton_Mage"]

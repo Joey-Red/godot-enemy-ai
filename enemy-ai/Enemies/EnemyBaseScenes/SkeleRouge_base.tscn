@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://cp4gwmr456ate"]
+
+[ext_resource type="PackedScene" uid="uid://drfbw73o4elmx" path="res://assets/KayKit_Skeletons_1.1_FREE/characters/gltf/Skeleton_Rogue.glb" id="1_gitxc"]
+
+[node name="SkeleRouge_base" type="Node3D"]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, -1, 0)
+
+[node name="Skeleton_Rogue" parent="." instance=ExtResource("1_gitxc")]

@@ -1,8 +1,7 @@
-[gd_scene load_steps=11 format=3 uid="uid://cixgq6lfcf62l"]
+[gd_scene load_steps=10 format=3 uid="uid://cixgq6lfcf62l"]
 
 [ext_resource type="Script" uid="uid://bx4iqwtx80nnt" path="res://Enemies/DummyEnemy/DummyEnemy.gd" id="1_wiado"]
 [ext_resource type="Script" uid="uid://cajvw2t2hbwrs" path="res://resources/enemy_stats.gd" id="2_6rlpo"]
-[ext_resource type="PackedScene" uid="uid://drfbw73o4elmx" path="res://assets/KayKit_Skeletons_1.1_FREE/characters/gltf/Skeleton_Rogue.glb" id="2_70q6i"]
 [ext_resource type="Script" uid="uid://d0170xy477263" path="res://Shared/Scripts/HealthComponent.gd" id="2_gociu"]
 [ext_resource type="PackedScene" uid="uid://c1hs512dj70sh" path="res://UI-HUD/Enemy/EnemyHealthbar3D.tscn" id="4_y7v25"]
 [ext_resource type="Script" uid="uid://r432o4ctwgv0" path="res://Enemies/EnemyComponents/EnemyMovementComponent.gd" id="5_16re4"]
@@ -10,7 +9,6 @@
 
 [sub_resource type="Resource" id="Resource_6rlpo"]
 script = ExtResource("2_6rlpo")
-model_scene = ExtResource("2_70q6i")
 metadata/_custom_type_script = "uid://cajvw2t2hbwrs"
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_4xrxs"]

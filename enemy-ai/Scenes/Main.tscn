@@ -1,7 +1,10 @@
-[gd_scene load_steps=7 format=3 uid="uid://disnqn4r1gsq"]
+[gd_scene load_steps=12 format=3 uid="uid://disnqn4r1gsq"]
 
 [ext_resource type="PackedScene" uid="uid://dg1cnchkr2ne1" path="res://Enemies/Spawner/EnemySpawner.tscn" id="1_v1gob"]
 [ext_resource type="PackedScene" uid="uid://qvf1fwy1u8vr" path="res://Scenes/sample_arena.tscn" id="3_kln2b"]
+[ext_resource type="PackedScene" uid="uid://can6v4kxdrge2" path="res://Enemies/Real_Enemies/SkeleMage.tscn" id="3_rgh2o"]
+[ext_resource type="Script" uid="uid://mfp023ur7mgf" path="res://Enemies/other_freaking_enemy_stuff_that_idk_where_to_put/SpawnDefinition.gd" id="3_v1gob"]
+[ext_resource type="PackedScene" uid="uid://bfo2it1jmjbyh" path="res://Enemies/Real_Enemies/SkeleRouge.tscn" id="5_v1gob"]
 [ext_resource type="PackedScene" uid="uid://fl35pvoq34i8" path="res://Player/Spawner/player_spawner.tscn" id="6_v1gob"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_r150o"]
@@ -16,6 +19,18 @@ background_mode = 2
 sky = SubResource("Sky_idj7w")
 tonemap_mode = 2
 glow_enabled = true
+
+[sub_resource type="Resource" id="Resource_50glp"]
+script = ExtResource("3_v1gob")
+enemy_scene = ExtResource("3_rgh2o")
+spawn_weight = 5
+metadata/_custom_type_script = "uid://mfp023ur7mgf"
+
+[sub_resource type="Resource" id="Resource_jw32o"]
+script = ExtResource("3_v1gob")
+enemy_scene = ExtResource("5_v1gob")
+spawn_weight = 5
+metadata/_custom_type_script = "uid://mfp023ur7mgf"
 
 [node name="Main" type="Node3D"]
 
@@ -32,5 +47,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8135037, 5.2934937, 5.52404
 
 [node name="EnemySpawner" parent="." instance=ExtResource("1_v1gob")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0417542, 0)
+spawn_list = Array[ExtResource("3_v1gob")]([SubResource("Resource_50glp"), SubResource("Resource_jw32o")])
 
 [node name="SampleArena" parent="." instance=ExtResource("3_kln2b")]

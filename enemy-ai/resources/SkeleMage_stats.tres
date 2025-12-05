@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="SkeleRougeStats" load_steps=3 format=3 uid="uid://djb54udkb04ta"]
+
+[ext_resource type="Script" uid="uid://c2602lvc36sbp" path="res://resources/SkeleMage_stats.gd" id="1_el5ti"]
+[ext_resource type="PackedScene" uid="uid://b6yfci4ywu0o0" path="res://Enemies/EnemyBaseScenes/skeleton_mage_base.tscn" id="1_nu4sl"]
+
+[resource]
+script = ExtResource("1_el5ti")
+model_scene = ExtResource("1_nu4sl")
+metadata/_custom_type_script = "uid://c2602lvc36sbp"
