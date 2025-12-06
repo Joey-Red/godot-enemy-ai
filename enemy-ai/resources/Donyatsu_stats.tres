@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="EnemyStats" load_steps=4 format=3 uid="uid://c2pwhvtkbeiwf"]
+
+[ext_resource type="PackedScene" uid="uid://dqxrlmvwm22c7" path="res://Enemies/EnemyBaseScenes/Donyatsu_base.tscn" id="1_v7we8"]
+[ext_resource type="PackedScene" uid="uid://rt8l28vdm678" path="res://Enemies/Projectiles/DonyFireball.tscn" id="2_aybdy"]
+[ext_resource type="Script" uid="uid://cajvw2t2hbwrs" path="res://resources/enemy_stats.gd" id="2_jhpnd"]
+
+[resource]
+script = ExtResource("2_jhpnd")
+max_health = 60.0
+move_speed = 6.0
+acceleration = 7.0
+attack_damage = 5.0
+attack_range = 6.0
+attack_rate = 1.7
+model_scene = ExtResource("1_v7we8")
+scale = 0.6
+model_rotation_y = 180.0
+projectile_scene = ExtResource("2_aybdy")
+is_flying = true
+metadata/_custom_type_script = "uid://cajvw2t2hbwrs"

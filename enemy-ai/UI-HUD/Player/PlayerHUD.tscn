@@ -179,6 +179,9 @@ layout_mode = 2
 [node name="DamageLabel" type="Label" parent="GameplayContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
+[node name="KillsLabel" type="Label" parent="GameplayContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
 [node name="DeathOverlay" type="ColorRect" parent="."]
 anchors_preset = 15
 anchor_right = 1.0

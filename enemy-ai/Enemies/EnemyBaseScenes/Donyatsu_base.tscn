@@ -1,0 +1,65 @@
+[gd_scene load_steps=5 format=3 uid="uid://dqxrlmvwm22c7"]
+
+[ext_resource type="ArrayMesh" uid="uid://d33t1oeff0eho" path="res://assets/Donyatsu/extracted/Donyatsu.Cubo.mesh" id="1_bhxih"]
+[ext_resource type="Skin" uid="uid://rfc1qaa7s41r" path="res://assets/Donyatsu/extracted/Donyatsu.Cubo.skin.tres" id="2_mtsqa"]
+[ext_resource type="Material" uid="uid://cu1vsc0nini2f" path="res://assets/Donyatsu/Materials/GatomMat1.material" id="3_xph2c"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_bhxih"]
+radius = 0.826
+
+[node name="Donyatsu" type="Node3D"]
+
+[node name="Body" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.4414432, 0.89728916, 0, -0.89728916, 0.4414432, 0, 2.4232683, 0)
+mesh = ExtResource("1_bhxih")
+skin = ExtResource("2_mtsqa")
+blend_shapes/vrc.v_aa = 0.0
+blend_shapes/vrc.v_ch = 0.0
+blend_shapes/vrc.v_dd = 0.0
+blend_shapes/vrc.v_e = 0.0
+blend_shapes/vrc.v_ff = 0.0
+blend_shapes/vrc.v_ih = 0.0
+blend_shapes/vrc.v_kk = 0.0
+blend_shapes/vrc.v_nn = 0.0
+blend_shapes/vrc.v_oh = 0.0
+blend_shapes/vrc.v_ou = 0.0
+blend_shapes/vrc.v_pp = 0.0
+blend_shapes/vrc.v_rr = 0.0
+blend_shapes/vrc.v_sil = 0.0
+blend_shapes/vrc.v_ss = 0.0
+blend_shapes/vrc.v_th = 0.0
+"blend_shapes/Confy Blink" = 0.0
+blend_shapes/Concentrated = 0.0
+blend_shapes/Sad = 0.0
+blend_shapes/Angry = 0.0
+blend_shapes/Rip = 0.0
+blend_shapes/Dumb = 0.0
+blend_shapes/A = 0.0
+blend_shapes/I = 0.0
+blend_shapes/E = 0.0
+blend_shapes/O = 0.0
+blend_shapes/Blush = 0.0
+blend_shapes/Love = 0.0
+blend_shapes/Sleep = 0.0
+blend_shapes/Stars = 0.0
+blend_shapes/Tired = 0.0
+blend_shapes/Surprised = 0.0
+"blend_shapes/Blink L" = 0.0
+"blend_shapes/Blink R" = 0.0
+"blend_shapes/_Star eyes" = 0.0
+blend_shapes/_Tired = 0.0
+blend_shapes/_Tongue = 0.0
+blend_shapes/_Sad = 0.0
+"blend_shapes/_Eyes  pucker" = 0.0
+blend_shapes/_Skirt = 1.0
+blend_shapes/_Tie = 0.0
+blend_shapes/_Bow = 0.0
+"blend_shapes/_Eyes closed" = 0.0
+"blend_shapes/_Schemy eyes" = 0.0
+"blend_shapes/_Wink L" = 0.0
+"blend_shapes/_Wink R" = 0.0
+surface_material_override/0 = ExtResource("3_xph2c")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.844018, 0.2394259)
+shape = SubResource("SphereShape3D_bhxih")

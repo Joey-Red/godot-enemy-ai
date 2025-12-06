@@ -1,0 +1,13 @@
+[gd_scene load_steps=4 format=3 uid="uid://drepnuqy42gmy"]
+
+[ext_resource type="PackedScene" uid="uid://cixgq6lfcf62l" path="res://Enemies/DummyEnemy/dummy_enemy.tscn" id="1_0h4nk"]
+[ext_resource type="Resource" uid="uid://b2bbvt3b3skh3" path="res://resources/SkeleWarrior_stats.tres" id="2_l3ydp"]
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_y7v25"]
+viewport_path = NodePath("SubViewport")
+
+[node name="SkeleWarrior" instance=ExtResource("1_0h4nk")]
+stats = ExtResource("2_l3ydp")
+
+[node name="EnemyHealthbar3D" parent="." index="2"]
+texture = SubResource("ViewportTexture_y7v25")

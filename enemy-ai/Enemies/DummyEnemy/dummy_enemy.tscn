@@ -16,14 +16,15 @@ metadata/_custom_type_script = "uid://cajvw2t2hbwrs"
 [sub_resource type="ViewportTexture" id="ViewportTexture_y7v25"]
 viewport_path = NodePath("SubViewport")
 
-[node name="DummyEnemy" type="CharacterBody3D" node_paths=PackedStringArray("health_component", "movement_component", "combat_component", "collision_shape", "visuals_container")]
+[node name="DummyEnemy" type="CharacterBody3D" node_paths=PackedStringArray("health_component", "movement_component", "combat_component", "visuals_container", "collision_shape")]
+collision_layer = 9
 script = ExtResource("1_wiado")
 stats = SubResource("Resource_6rlpo")
 health_component = NodePath("Components/HealthComponent")
 movement_component = NodePath("Components/MovementComponent")
 combat_component = NodePath("Components/EnemyCombatComponent")
-collision_shape = NodePath("CollisionShape3D")
 visuals_container = NodePath("VisualsContainer")
+collision_shape = NodePath("CollisionShape3D")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 shape = SubResource("CapsuleShape3D_4xrxs")

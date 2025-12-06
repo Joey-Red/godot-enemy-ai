@@ -26,4 +26,20 @@ maybe add death/respawn screen
 
 
 Enemies facing backward, was in the middle of giving them animations, meshes (pcked scnee)
-and everything. ^
+- Enemies now have a rotation, you can flip them in the 'EnemyStats' sub resource. 
+- Can easily create new enemies
+x animations not done
+
+
+Flying Enemies
+Issue - When you have a flying enemy, their collision box must be touching the ground, which will give an innacurate hit box. 
+Fix - need to set up collision layers ? so they have one touching ground (navigation) and one for player attacks
+
+
+To do .
+Enemies dont stagger or anything if theyre hit. need them to stagger and cancel animation, etc.
+
+to do . 
+flying enemies - need to figure out ground/air hitbox .. .something something collision layers
+OR - - 2 collision shapes with different collision layers
+one for ground one for hitting. i think this is better but idk

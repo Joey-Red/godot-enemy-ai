@@ -3,3 +3,6 @@ Changed Physics Interpolation to on
 # Also disabled Physics Interpolation on Player Camera
 
 Turned Unused Signal Warnings off for Signal Bus
+
+
+Check Project Settings > Layer names > Collision Layers to see what is what.

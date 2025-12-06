@@ -27,3 +27,8 @@ class_name EnemyStats
 @export var projectile_scene: PackedScene 
 @export var projectile_speed: float = 10.0
 @export var cast_color: Color = Color.PURPLE # Optional: for particle effects
+
+
+@export_group("Movement Settings")
+@export var is_flying: bool = false
+@export var turn_speed: float = 5.0 # How fast they turn/adjust direction

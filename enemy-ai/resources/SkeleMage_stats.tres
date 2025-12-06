@@ -6,7 +6,7 @@
 
 [resource]
 script = ExtResource("1_el5ti")
-attack_range = 100.0
+attack_range = 8.0
 model_scene = ExtResource("1_nu4sl")
 projectile_scene = ExtResource("2_2y18t")
 metadata/_custom_type_script = "uid://cajvw2t2hbwrs"

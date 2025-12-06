@@ -1,37 +1,3 @@
-#extends CanvasLayer
-#
-#@onready var hp_bar = $Control/MarginContainer/VBoxContainer/HPBar
-#@onready var speed_label = $Control/MarginContainer/VBoxContainer/SpeedLabel
-#@onready var dmg_label = $Control/MarginContainer/VBoxContainer/DamageLabel
-#
-## We inject the dependency externally.
-#func setup_ui(player: PlayerController):
-	## 1. Connect Health (Assuming HealthComponent has on_health_changed(current, max))
-	#if player.health:
-		#player.health.on_health_changed.connect(update_health)
-		## Initialize
-		#update_health(player.health.current_health, player.health.max_health)
-	#
-	## 2. Connect Movement Speed
-	#if player.movement:
-		#player.movement.on_speed_changed.connect(update_speed)
-		## Initialize manual check
-		#update_speed(player.movement.speed)
-#
-	## 3. Connect Combat Stats
-	#if player.combat:
-		#player.combat.on_damage_multiplier_changed.connect(update_dmg)
-		#update_dmg(player.combat.damage_multiplier)
-#
-#func update_health(current, max_hp):
-	#hp_bar.max_value = max_hp
-	#hp_bar.value = current
-#
-#func update_speed(new_speed):
-	#speed_label.text = "Speed: %.1f" % new_speed
-#
-#func update_dmg(new_mult):
-	#dmg_label.text = "Dmg Mult: x%.1f" % new_mult
 extends CanvasLayer
 
 # --- NODES ---
@@ -41,6 +7,7 @@ extends CanvasLayer
 @onready var hp_bar = $GameplayContainer/MarginContainer/VBoxContainer/HPBar
 @onready var speed_label = $GameplayContainer/MarginContainer/VBoxContainer/SpeedLabel
 @onready var dmg_label = $GameplayContainer/MarginContainer/VBoxContainer/DamageLabel
+@onready var kills_label = $GameplayContainer/MarginContainer/VBoxContainer/KillsLabel
 
 # Death Screen Nodes
 @onready var death_overlay = $DeathOverlay
@@ -77,6 +44,9 @@ func setup_ui(player: PlayerController):
 	if player.combat:
 		player.combat.on_damage_multiplier_changed.connect(update_dmg)
 		update_dmg(player.combat.damage_multiplier)
+	if not SignalBus.enemy_died.is_connected(update_kills):
+		SignalBus.enemy_died.connect(update_kills)
+		update_kills(null)
 
 # --- UPDATERS ---
 func update_health(current, max_hp):
@@ -89,6 +59,13 @@ func update_speed(new_speed):
 func update_dmg(new_mult):
 	dmg_label.text = "Dmg Mult: x%.1f" % new_mult
 
+var TotalKills: float = 0
+func update_kills(_enemy_node): 
+	if (_enemy_node):
+		TotalKills += 1
+		kills_label.text = "Kills: %.0f" % TotalKills
+	else: #should only run on setup
+		kills_label.text = "Kills: 0"
 # --- DEATH LOGIC ---
 
 func _on_player_died():
