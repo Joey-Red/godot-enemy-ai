@@ -50,7 +50,7 @@ metadata/_custom_type_script = "uid://mfp023ur7mgf"
 [sub_resource type="Resource" id="Resource_4kpch"]
 script = ExtResource("3_v1gob")
 enemy_scene = ExtResource("8_vy5pj")
-spawn_weight = 100
+spawn_weight = 5
 metadata/_custom_type_script = "uid://mfp023ur7mgf"
 
 [node name="Main" type="Node3D"]

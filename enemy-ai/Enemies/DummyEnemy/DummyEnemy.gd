@@ -25,8 +25,10 @@ var current_state: State = State.IDLE
 var attack_timer: float = 0.0 
 var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
 var player_target: Node3D
-var GeneralAnimations: AnimationPlayer
-var MovementAnimations: AnimationPlayer
+
+# --- 5. ANIMATION SYSTEM (Refactored) ---
+# We no longer hardcode specific players. We store a list of ALL players found.
+var _animation_players: Array[AnimationPlayer] = []
 
 # --- SETUP ---
 func _ready():
@@ -64,41 +66,54 @@ func initialize_from_stats():
 	if combat_component:
 		var proj_scene = null
 		var proj_speed = 0.0
+		# Safety check using 'in' in case resource isn't updated yet
 		if "projectile_scene" in stats:
 			proj_scene = stats.projectile_scene
 			proj_speed = stats.projectile_speed
 			
 		combat_component.initialize(stats.attack_damage, stats.attack_range, stats.attack_rate, proj_scene, proj_speed)
 		
-	# LOAD VISUALS
+	# 2. LOAD VISUALS & FIND ANIMATIONS
 	if stats.model_scene and visuals_container:
+		# Clear existing placeholders
 		for child in visuals_container.get_children():
 			child.queue_free()
 		
+		# Instantiate new model
 		var new_model = stats.model_scene.instantiate()
 		visuals_container.add_child(new_model)
 		visuals_container.scale = Vector3.ONE * stats.scale
 		
-		var _GeneralAnimations = find_animation_player(new_model, "GeneralAnimations")
-		if _GeneralAnimations: GeneralAnimations = _GeneralAnimations
-		var _MovementAnimations = find_animation_player(new_model, "MovementAnimations")
-		if _MovementAnimations: MovementAnimations = _MovementAnimations
-	
+		# NEW: Dynamic Animation Discovery
+		_animation_players.clear()
+		_find_all_animation_players(new_model)
+
 	if collision_shape:
 		collision_shape.scale = Vector3.ONE * stats.scale
 
 	if "model_rotation_y" in stats and visuals_container and visuals_container.get_child_count() > 0:
 		visuals_container.get_child(0).rotation_degrees.y = stats.model_rotation_y
 
-func find_animation_player(root_node: Node, lookingfor: String) -> AnimationPlayer:
-	for child in root_node.get_children():
-		if child.name == "GeneralAnimations" && lookingfor == "GeneralAnimations":
-			return child
-		elif child.name == "MovementAnimations"  && lookingfor == "MovementAnimations":
-			return child
-		var found = find_animation_player(child, "Anim") 
-		if found: return found
-	return null
+# --- NEW RECURSIVE SEARCH FUNCTION ---
+func _find_all_animation_players(node: Node):
+	if node is AnimationPlayer:
+		_animation_players.append(node)
+	
+	for child in node.get_children():
+		_find_all_animation_players(child)
+
+# --- NEW UNIVERSAL PLAY FUNCTION ---
+func play_animation(anim_name: String):
+	if _animation_players.is_empty() or anim_name == "":
+		return
+		
+	# Look through all found players
+	for anim_player in _animation_players:
+		if anim_player.has_animation(anim_name):
+			# If found, play it (with blend) and return
+			# 0.2 is the default blend time, you could also add this to EnemyStats
+			anim_player.play(anim_name, 0.2) 
+			return
 
 # --- MAIN PHYSICS LOOP ---
 func _physics_process(delta):
@@ -150,17 +165,14 @@ func _process_chase(delta):
 		var turn_rate = stats.turn_speed if "turn_speed" in stats else 5.0
 		velocity = velocity.lerp(direction * stats.move_speed, turn_rate * delta)
 		
-		# Rotate smoothly towards VELOCITY
 		_rotate_smoothly(velocity, delta)
 		
 	else:
 		if movement_component:
 			var chase_velocity = movement_component.get_chase_velocity()
-			# Smooth Acceleration for Ground too (Reduces choppiness)
 			velocity.x = move_toward(velocity.x, chase_velocity.x, stats.acceleration * delta)
 			velocity.z = move_toward(velocity.z, chase_velocity.z, stats.acceleration * delta)
 			
-			# Rotate smoothly towards VELOCITY
 			_rotate_smoothly(velocity, delta)
 
 	# --- ATTACK CHECK ---
@@ -179,19 +191,18 @@ func _process_attack(_delta):
 		player_target = null
 		return
 
-	# During attack, rotate smoothly towards PLAYER
+	# Rotate smoothly towards PLAYER
 	var dir_to_player = (player_target.global_position - global_position)
 	_rotate_smoothly(dir_to_player, _delta)
 	
 	if attack_timer <= 0:
 		if combat_component:
 			combat_component.try_attack() 
-			if GeneralAnimations and GeneralAnimations.has_animation("Throw"):
-				GeneralAnimations.stop() 
-				GeneralAnimations.play("Throw", 0.1)
-			elif MovementAnimations and MovementAnimations.has_animation("Throw"):
-				MovementAnimations.stop() 
-				MovementAnimations.play("Throw", 0.1)
+			
+			# NEW: Play attack animation defined in stats
+			if "anim_attack" in stats:
+				play_animation(stats.anim_attack)
+			
 			attack_timer = stats.attack_rate if stats else 1.0
 
 	if not player_target or not is_instance_valid(player_target):
@@ -205,29 +216,18 @@ func _process_attack(_delta):
 		current_state = State.CHASE
 
 func _rotate_smoothly(target_direction: Vector3, delta: float):
-	# 1. Isolate horizontal direction (X and Z only)
 	var horizontal_dir = Vector3(target_direction.x, 0, target_direction.z)
 
-	# 2. SAFETY CHECK: 
-	# If the horizontal direction is basically zero (we are stopped OR moving straight up/down),
-	# do NOT try to rotate. This prevents the "looking at self" crash.
 	if horizontal_dir.length_squared() < 0.001:
 		return
 
-	# 3. Create a look position based on that horizontal direction
-	# We add the horizontal offset to our current position
 	var target_look_pos = global_position + horizontal_dir
-	
-	# 4. Calculate the desired rotation
-	# looking_at() requires a target different from origin, which we guaranteed above
 	var current_transform = global_transform
 	var target_transform = current_transform.looking_at(target_look_pos, Vector3.UP)
 	
-	# 5. Extract Y-Rotation (Yaw) and interpolate
 	var current_y = rotation.y
 	var target_y = target_transform.basis.get_euler().y
 	
-	# Use turn_speed from stats, or default to 10.0
 	var turn_speed = stats.turn_speed if "turn_speed" in stats else 10.0
 	rotation.y = lerp_angle(current_y, target_y, turn_speed * delta)
 
@@ -245,7 +245,10 @@ func find_player():
 func take_damage(amount: float): 
 	if health_component:
 		health_component.take_damage(amount)
-	play_anim_safe("Hit_A", GeneralAnimations)
+	
+	# NEW: Play hit animation from stats
+	if "anim_hit" in stats:
+		play_animation(stats.anim_hit)
 
 func _on_attack_visuals():
 	if visuals_container:
@@ -257,7 +260,10 @@ func _on_attack_visuals():
 
 func _on_hit(_amount):
 	_update_ui(health_component.current_health, health_component.max_health)
-	if not GeneralAnimations: 
+	
+	# Only do the squash/stretch tween if we DON'T have a hit animation
+	# or if we want it to happen alongside the animation
+	if not "anim_hit" in stats or stats.anim_hit == "":
 		if visuals_container:
 			var tween = create_tween()
 			tween.tween_property(visuals_container, "scale", Vector3(1.1, 0.9, 1.1), 0.1)
@@ -265,21 +271,22 @@ func _on_hit(_amount):
 
 # --- ANIMATION LOGIC ---
 func _update_animation_state():
-	if not GeneralAnimations and not MovementAnimations: 
+	if _animation_players.is_empty(): 
 		return
+	
+	# Safety check for properties in case EnemyStats is not fully updated yet
+	var has_anim_props = "anim_idle" in stats
+	
+	if not has_anim_props:
+		return
+
 	match current_state:
 		State.IDLE:
-			play_anim_safe("Idle_A", GeneralAnimations)
+			play_animation(stats.anim_idle)
 		State.CHASE:
-			play_anim_safe("Running_A", MovementAnimations) 
+			play_animation(stats.anim_move) 
 		State.DEAD:
-			play_anim_safe("Death_A", GeneralAnimations)
-
-func play_anim_safe(anim_name: String, anim_player):
-	if not anim_player:
-		return
-	if anim_player.has_animation(anim_name):
-		anim_player.play(anim_name, 0.2)
+			play_animation(stats.anim_death)
 
 func _update_ui(current, max_hp):
 	if health_bar:
@@ -289,13 +296,17 @@ func _on_death():
 	current_state = State.DEAD
 	SignalBus.enemy_died.emit(self)
 	velocity = Vector3.ZERO
-	if visuals_container: visuals_container.visible = false
-	collision_shape.set_deferred("disabled", true)
+	# Note: We usually keep visuals visible for death animation
+	# collision_shape.set_deferred("disabled", true) 
+	
 	if auto_respawn:
 		current_state = State.RESPAWNING
 		await get_tree().create_timer(respawn_time).timeout
 		respawn()
 	else:
+		# If you have a death animation, wait for it to finish?
+		# For now, just wait a moment then free
+		await get_tree().create_timer(1.0).timeout
 		queue_free()
 
 func respawn():

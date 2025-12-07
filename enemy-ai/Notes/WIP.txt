@@ -31,6 +31,9 @@ Enemies facing backward, was in the middle of giving them animations, meshes (pc
 flying enemies - need to figure out ground/air hitbox .. .something something collision layers
 - Flying and ground enemies now have proper working hitboxes.
 
+Make enemies allow additional animationplayers / skeletons
+- Can now use any skeleton/animationplayer. need to put PROPER animationplayer on 'xxxx_base.tscn' then in the 'Real_Enemy'
+	need to link animations to states under enemy stats resource, can also modify animation speed.
 
 =====================================  TO DO   ===========================================
 
@@ -40,7 +43,7 @@ ENEMY AI: right now they just follow, super basic.
 
 Maybe add slide mechanic, or if we go forward with beardo maybe like a roll or something.
 
-Also todo - not get to focused, this is supposed to be general purpose for reuse.
+@@Also todo - not get to focused, this is supposed to be general purpose for reuse.@@
 
 I think enemies are respawning - so max of 5, but everytime you kill them they respawn  ? 
 	so every kill means max enemies goes up by 1 (unintended.)

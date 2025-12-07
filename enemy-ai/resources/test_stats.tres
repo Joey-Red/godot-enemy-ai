@@ -6,4 +6,9 @@
 [resource]
 script = ExtResource("1_kdean")
 model_scene = ExtResource("1_mu1lq")
+anim_idle = "CharacterArmature|Idle"
+anim_move = "CharacterArmature|Run"
+anim_attack = "CharacterArmature|Punch"
+anim_death = "CharacterArmature|Death"
+anim_hit = "CharacterArmature|HitReact"
 metadata/_custom_type_script = "uid://cajvw2t2hbwrs"

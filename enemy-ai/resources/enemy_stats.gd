@@ -32,3 +32,15 @@ class_name EnemyStats
 @export_group("Movement Settings")
 @export var is_flying: bool = false
 @export var turn_speed: float = 5.0 # How fast they turn/adjust direction
+
+@export_group("Animation Map")
+@export_subgroup("State Names")
+# Default values act as a fallback
+@export var anim_idle: String = "Idle"
+@export var anim_move: String = "Run"
+@export var anim_attack: String = "Attack"
+@export var anim_death: String = "Death"
+@export var anim_hit: String = "Hit"
+
+@export_subgroup("Animation Settings")
+@export var animation_blend_time: float = 0.
