@@ -17,5 +17,5 @@ size = Vector2i(500, 300)
 render_target_update_mode = 4
 
 [node name="Camera3D" type="Camera3D" parent="DebugLayer/DebugView/SubViewport"]
-transform = Transform3D(1, 0, 0, 0, 0.90635943, 0.42250755, 0, -0.42250755, 0.90635943, 0, 6.9171085, 10.806967)
+transform = Transform3D(-0.4063859, 0.38604578, -0.82814205, -1.3851971e-08, 0.90635943, 0.42250755, 0.9137016, 0.17170112, -0.3683317, -0.025218964, 6.9171085, -2.0666294)
 top_level = true

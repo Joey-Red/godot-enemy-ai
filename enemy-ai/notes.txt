@@ -3,8 +3,6 @@
 
 - ENEMY AI: right now they just follow, super basic. 
 	[ ] done
-- Maybe add slide mechanic, or if we go forward with beardo maybe like a roll or something.
-	[ ] done
 
 - Add 'Game Juice' aka 'Game Feel' (probably another github repo)
 	[ ] Weapon Sound

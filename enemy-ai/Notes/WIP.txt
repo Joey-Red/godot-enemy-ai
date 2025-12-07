@@ -39,3 +39,7 @@
 [x] so every kill means max enemies goes up by 1 (unintended.)
 [x] fixed, silly. dummyenemy.gd has auto respawn variable that was true, 
 [x] probably should only be true if you are hitting a practice dummy or testing something.
+
+
+- Maybe add slide mechanic, or if we go forward with beardo maybe like a roll or something.
+	[x] done
