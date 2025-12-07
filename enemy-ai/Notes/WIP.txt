@@ -1,51 +1,41 @@
-=============================================   Fixed issues   ===========================================================
+[rainbow]==========   Fixed issues ==========[/rainbow]
 	
-Projectile only shoots straight, not up/down.
--Projectile Now Shoots where aiming (vertically)
+- Projectile only shoots straight, not up/down.
+[x]Projectile Now Shoots where aiming (vertically)
 
-Sword only swings straight, not up and down
--Sword now can be aimed vertically.
-
-
-Need to create a player spawner, and remove the script attached to Main level
--done
-
-Work on Simple Enemy AI, Animations, etc. how smart?
-- have enemy ai that follow,
-
-Enemy AI - when player dies, they do not retarget.
-- They now retarget
-
-TODO: make Sure player has no control after death until respawn.
-- WASD disabled, added death animation so mouse control is fine ig.
-
-maybe add death/respawn screen
-- Added death fade out, respawn fade in, button to respawn etc.
+- Sword only swings straight, not up and down
+[x]Sword now can be aimed vertically.
 
 
-Enemies facing backward, was in the middle of giving them animations, meshes (pcked scnee)
-- Enemies now have a rotation, you can flip them in the 'EnemyStats' sub resource. 
-- Can easily create new enemies
-- animations done (kind of shit but they work for now)
+- Need to create a player spawner, and remove the script attached to Main level
+[x]done
 
-flying enemies - need to figure out ground/air hitbox .. .something something collision layers
-- Flying and ground enemies now have proper working hitboxes.
+- Work on Simple Enemy AI, Animations, etc. how smart?
+[x]have enemy ai that follow,
 
-Make enemies allow additional animationplayers / skeletons
-- Can now use any skeleton/animationplayer. need to put PROPER animationplayer on 'xxxx_base.tscn' then in the 'Real_Enemy'
-	need to link animations to states under enemy stats resource, can also modify animation speed.
+- Enemy AI - when player dies, they do not retarget.
+[x]They now retarget
 
-I think enemies are respawning - so max of 5, but everytime you kill them they respawn  ? 
-	so every kill means max enemies goes up by 1 (unintended.)
-- fixed, silly. dummyenemy.gd has auto respawn variable that was true, 
-	probably should only be true if you are hitting a practice dummy or testing something.
+- TODO: make Sure player has no control after death until respawn.
+[x]WASD disabled, added death animation so mouse control is fine ig.
 
-=====================================  TO DO   ===========================================
+- maybe add death/respawn screen
+[x]Added death fade out, respawn fade in, button to respawn etc.
 
-Enemies dont stagger or anything if theyre hit. need them to stagger and cancel animation, etc.
 
-ENEMY AI: right now they just follow, super basic. 
+- Enemies facing backward, was in the middle of giving them animations, meshes (pcked scnee)
+[x] Enemies now have a rotation, you can flip them in the 'EnemyStats' sub resource. 
+[x] Can easily create new enemies
+[x] animations done (kind of shit but they work for now)
 
-Maybe add slide mechanic, or if we go forward with beardo maybe like a roll or something.
+- flying enemies - need to figure out ground/air hitbox .. .something something collision layers
+[x]Flying and ground enemies now have proper working hitboxes.
 
-@@Also todo - not get to focused, this is supposed to be general purpose for reuse.@@
+- Make enemies allow additional animationplayers / skeletons
+[x] Can now use any skeleton/animationplayer. need to put PROPER animationplayer on 'xxxx_base.tscn' then in the 'Real_Enemy'
+[x] need to link animations to states under enemy stats resource, can also modify animation speed.
+
+- I think enemies are respawning - so max of 5, but everytime you kill them they respawn  ? 
+[x] so every kill means max enemies goes up by 1 (unintended.)
+[x] fixed, silly. dummyenemy.gd has auto respawn variable that was true, 
+[x] probably should only be true if you are hitting a practice dummy or testing something.

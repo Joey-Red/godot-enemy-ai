@@ -296,7 +296,15 @@ func _update_ui(current, max_hp):
 func _on_death():
 	current_state = State.DEAD
 	SignalBus.enemy_died.emit(self)
-	velocity = Vector3.ZERO
+	
+	if stats.is_flying: #the idea here is that if they die they fall downward.
+		motion_mode = CharacterBody3D.MOTION_MODE_GROUNDED
+		velocity = Vector3.DOWN
+	else:
+		velocity = Vector3.ZERO
+
+		
+		
 	
 	if auto_respawn:
 		current_state = State.RESPAWNING
@@ -305,8 +313,9 @@ func _on_death():
 	else:
 		# If you have a death animation, wait for it to finish?
 		# For now, just wait a moment then free
-		await get_tree().create_timer(1.0).timeout
+		await get_tree().create_timer(0.75).timeout
 		queue_free()
+	
 
 func respawn():
 	health_component.reset_health()

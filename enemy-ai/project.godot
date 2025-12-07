@@ -25,7 +25,7 @@ gdscript/warnings/unused_signal=0
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/unidot_importer/plugin.cfg")
+enabled=PackedStringArray("res://addons/quick_notes_dock/plugin.cfg", "res://addons/unidot_importer/plugin.cfg")
 
 [file_customization]
 

@@ -12,6 +12,7 @@ attack_damage = 12.0
 attack_range = 2.5
 attack_rate = 1.2
 model_scene = ExtResource("1_l328f")
+scale = 0.8
 model_rotation_y = 180.0
 anim_idle = "Idle-A"
 anim_move = "Running_A"

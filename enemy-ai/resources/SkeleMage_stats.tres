@@ -8,6 +8,7 @@
 script = ExtResource("1_el5ti")
 attack_range = 8.0
 model_scene = ExtResource("1_nu4sl")
+scale = 0.7
 projectile_scene = ExtResource("2_2y18t")
 anim_idle = "Idle_A"
 anim_move = "Running_A"
