@@ -35,7 +35,12 @@ flying enemies - need to figure out ground/air hitbox .. .something something co
 =====================================  TO DO   ===========================================
 
 Enemies dont stagger or anything if theyre hit. need them to stagger and cancel animation, etc.
+
 ENEMY AI: right now they just follow, super basic. 
 
 Maybe add slide mechanic, or if we go forward with beardo maybe like a roll or something.
+
 Also todo - not get to focused, this is supposed to be general purpose for reuse.
+
+I think enemies are respawning - so max of 5, but everytime you kill them they respawn  ? 
+	so every kill means max enemies goes up by 1 (unintended.)
