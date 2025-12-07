@@ -8,8 +8,12 @@ viewport_path = NodePath("SubViewport")
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_kgmov"]
 
-[node name="testenemy" node_paths=PackedStringArray("collision_shape") instance=ExtResource("1_1q7bi")]
+[node name="testenemy" node_paths=PackedStringArray("health_component", "movement_component", "combat_component", "visuals_container", "collision_shape") instance=ExtResource("1_1q7bi")]
 stats = ExtResource("2_giokv")
+health_component = NodePath("Components/HealthComponent")
+movement_component = NodePath("Components/MovementComponent")
+combat_component = NodePath("Components/EnemyCombatComponent")
+visuals_container = NodePath("VisualsContainer")
 collision_shape = NodePath("CollisionShape3D")
 
 [node name="VisualsContainer" parent="." index="0"]

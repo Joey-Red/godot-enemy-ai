@@ -19,6 +19,7 @@ var projectile_speed: float = 0.0
 var target: Node3D
 var _can_attack: bool = true
 var _timer: Timer
+var muzzle_point: Marker3D
 
 func _ready():
 	# Create cooldown timer via code
@@ -83,25 +84,15 @@ func _perform_melee_hit():
 # --- RANGED LOGIC ---
 func _spawn_projectile():
 	if not projectile_scene: return
-	
-	# 1. Instantiate the bullet
 	var new_proj = projectile_scene.instantiate()
-	
-	# 2. Add to the MAIN SCENE (Not the enemy, so it doesn't move with the enemy)
 	get_tree().current_scene.add_child(new_proj)
 	
-	# 3. Position it (Start at head height, e.g., +1.5m up)
-	var spawn_pos = actor.global_position
-	spawn_pos.y += 1
-	new_proj.global_position = spawn_pos
+	# USE THE MARKER
+	if muzzle_point:
+		new_proj.global_transform = muzzle_point.global_transform
+	else:
+		# Fallback if no marker set
+		new_proj.global_position = actor.global_position + Vector3(0, 1.0, 0)
 	
-	# 4. Aim at target
-	# We aim at the target's center (assuming target origin is at feet, we look up slightly)
-	var target_aim_pos = target.global_position
-	target_aim_pos.y += .5 # Aim for the chest
-	new_proj.look_at(target_aim_pos)
-	
-	# 5. Configure Projectile
-	# Requires the projectile script to have an 'initialize' function
-	if new_proj.has_method("initialize"):
-		new_proj.initialize(damage, projectile_speed)
+	# Aiming logic...
+	new_proj.look_at(target.global_position + Vector3(0, 1.0, 0))

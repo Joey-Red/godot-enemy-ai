@@ -8,10 +8,14 @@ viewport_path = NodePath("SubViewport")
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_8cy67"]
 
-[node name="Donyatsu" node_paths=PackedStringArray("collision_shape") instance=ExtResource("1_ot37s")]
+[node name="Donyatsu" node_paths=PackedStringArray("health_component", "movement_component", "combat_component", "visuals_container", "collision_shape") instance=ExtResource("1_ot37s")]
 collision_layer = 5
 motion_mode = 1
 stats = ExtResource("2_8cy67")
+health_component = NodePath("Components/HealthComponent")
+movement_component = NodePath("Components/MovementComponent")
+combat_component = NodePath("Components/EnemyCombatComponent")
+visuals_container = NodePath("VisualsContainer")
 collision_shape = NodePath("CollisionShape3D")
 
 [node name="EnemyHealthbar3D" parent="." index="1"]

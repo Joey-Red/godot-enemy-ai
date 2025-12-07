@@ -6,8 +6,7 @@ extends CharacterBody3D
 
 # --- 2. SETTINGS ---
 @export_group("Settings")
-@export var auto_respawn: bool = false # turned this off for testing, is an export var for each enemy however if you want to change it there.
- # dont think this should really ever be on, except like a practice dummy or something.
+@export var auto_respawn: bool = false 
 @export var respawn_time: float = 3.0
 
 # --- 3. COMPONENT REFERENCES ---
@@ -27,65 +26,70 @@ var attack_timer: float = 0.0
 var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
 var player_target: Node3D
 
-# --- 5. ANIMATION SYSTEM (Refactored) ---
-# We no longer hardcode specific players. We store a list of ALL players found.
+# --- 5. ANIMATION SYSTEM ---
 var _animation_players: Array[AnimationPlayer] = []
 
 # --- SETUP ---
 func _ready():
+	# SAFETY CHECK: If no stats, don't just warn, handle it gracefully
 	if stats:
 		initialize_from_stats()
 	else:
-		push_warning("No EnemyStats resource assigned to " + name)
+		push_error("CRITICAL: No EnemyStats resource assigned to " + name)
+		# Optional: queue_free() here if you don't want broken enemies existing
+		return
 
 	if health_component:
 		health_component.on_death.connect(_on_death)
 		health_component.on_damage_taken.connect(_on_hit)
 		health_component.on_health_changed.connect(_update_ui)
+		# Force UI update immediately to prevent "0%" glitches
 		_update_ui(health_component.current_health, health_component.max_health)
 		
 	if combat_component:
 		combat_component.on_attack_performed.connect(_on_attack_visuals)
 
+	# --- FIX: SAFE CONNECTION ---
+	if movement_component and movement_component.nav_agent:
+		# Only connect if the signal exists, and ensure we don't connect twice
+		if not movement_component.nav_agent.velocity_computed.is_connected(_on_velocity_computed):
+			movement_component.nav_agent.velocity_computed.connect(_on_velocity_computed)
+
 	SignalBus.player_spawned.connect(_on_player_spawned)
 	SignalBus.player_died.connect(_on_player_died)
-	call_deferred("find_player")
+	
+	# Small delay to ensure world is ready before finding player
+	await get_tree().physics_frame
+	find_player()
 
 # --- INITIALIZATION LOGIC ---
 func initialize_from_stats():
-	# 0. Physics Mode
 	if stats.is_flying:
 		motion_mode = CharacterBody3D.MOTION_MODE_FLOATING
 		axis_lock_linear_y = false 
 	else:
 		motion_mode = CharacterBody3D.MOTION_MODE_GROUNDED
 
-	# 1. Initialize Components
 	if health_component: health_component.initialize(stats.max_health)
 	if movement_component: movement_component.initialize(stats.move_speed, stats.acceleration)
 	
 	if combat_component:
 		var proj_scene = null
 		var proj_speed = 0.0
-		# Safety check using 'in' in case resource isn't updated yet
 		if "projectile_scene" in stats:
 			proj_scene = stats.projectile_scene
 			proj_speed = stats.projectile_speed
 			
 		combat_component.initialize(stats.attack_damage, stats.attack_range, stats.attack_rate, proj_scene, proj_speed)
 		
-	# 2. LOAD VISUALS & FIND ANIMATIONS
 	if stats.model_scene and visuals_container:
-		# Clear existing placeholders
 		for child in visuals_container.get_children():
 			child.queue_free()
 		
-		# Instantiate new model
 		var new_model = stats.model_scene.instantiate()
 		visuals_container.add_child(new_model)
 		visuals_container.scale = Vector3.ONE * stats.scale
 		
-		# NEW: Dynamic Animation Discovery
 		_animation_players.clear()
 		_find_all_animation_players(new_model)
 
@@ -94,36 +98,56 @@ func initialize_from_stats():
 
 	if "model_rotation_y" in stats and visuals_container and visuals_container.get_child_count() > 0:
 		visuals_container.get_child(0).rotation_degrees.y = stats.model_rotation_y
+		
+	# Refresh UI once more after init
+	if health_component:
+		_update_ui(health_component.current_health, health_component.max_health)
 
-# --- NEW RECURSIVE SEARCH FUNCTION ---
 func _find_all_animation_players(node: Node):
 	if node is AnimationPlayer:
 		_animation_players.append(node)
-	
 	for child in node.get_children():
 		_find_all_animation_players(child)
-
-# --- NEW UNIVERSAL PLAY FUNCTION ---
+		
 func play_animation(anim_name: String):
 	if _animation_players.is_empty() or anim_name == "":
 		return
 		
-	# Look through all found players
 	for anim_player in _animation_players:
 		if anim_player.has_animation(anim_name):
-			# If found, play it (with blend) and return
-			# 0.2 is the default blend time, you could also add this to EnemyStats
 			anim_player.play(anim_name, 0.2) 
 			return
+	
+	# DEBUG: If we get here, the animation was NOT found
+	print("WARNING: Could not find animation: ", anim_name)
 
-# --- MAIN PHYSICS LOOP ---
+# --- MAIN PHYSICS LOOP (FIXED) ---
 func _physics_process(delta):
+	if not stats: return 
+
+	# --- 1. DEAD STATE HANDLING ---
+	if current_state == State.DEAD:
+		# If we died in the air, apply gravity so we hit the floor.
+		if not stats.is_flying and not is_on_floor():
+			velocity.y -= gravity * delta
+			velocity.x = 0 
+			velocity.z = 0
+			move_and_slide()
+		
+		# CRITICAL: Return immediately. 
+		# Do NOT run the rest of the function.
+		# Do NOT run _update_animation_state() (keeps the death anim playing).
+		return
+
+	# --- 2. LIVING GRAVITY ---
 	if not stats.is_flying and not is_on_floor():
 		velocity.y -= gravity * delta
 
+	# --- 3. TIMERS ---
 	if attack_timer > 0:
 		attack_timer -= delta
 
+	# --- 4. STATE MACHINE ---
 	match current_state:
 		State.IDLE:
 			_process_idle(delta)
@@ -131,15 +155,38 @@ func _physics_process(delta):
 			_process_chase(delta)
 		State.ATTACK:
 			_process_attack(delta)
-		State.DEAD, State.RESPAWNING:
-			pass 
 	
+	# --- 5. UPDATE ANIMATIONS ---
 	_update_animation_state()
+	
+	# --- 6. MOVEMENT EXECUTION ---
+	var use_avoidance = false
+	
+	if movement_component and movement_component.nav_agent:
+		if movement_component.nav_agent.avoidance_enabled:
+			use_avoidance = true
+
+	if use_avoidance:
+		movement_component.nav_agent.set_velocity(velocity)
+	else:
+		move_and_slide()
+# --- CALLBACK FOR AVOIDANCE ---
+func _on_velocity_computed(safe_velocity: Vector3):
+	# This only runs if avoidance is enabled and working
+	if stats.is_flying:
+		velocity = safe_velocity
+	else:
+		# Preserve Gravity
+		var stored_y = velocity.y
+		velocity = safe_velocity
+		velocity.y = stored_y
+		
 	move_and_slide()
 
 # --- STATE FUNCTIONS ---
 
 func _process_idle(_delta):
+	# Damping
 	velocity.x = move_toward(velocity.x, 0, 1.0)
 	velocity.z = move_toward(velocity.z, 0, 1.0)
 	if stats.is_flying:
@@ -156,27 +203,24 @@ func _process_chase(delta):
 
 	var distance = global_position.distance_to(player_target.global_position)
 	
-	# --- MOVEMENT ---
 	if stats.is_flying:
-		# Fly towards head height
-		var target_pos = player_target.global_position + Vector3(0, 1.5, 0)
+		# FLYING HEIGHT FIX
+		var target_pos = player_target.global_position + Vector3(0, 4.0, 0)
 		var direction = (target_pos - global_position).normalized()
 		
-		# Smooth Acceleration
 		var turn_rate = stats.turn_speed if "turn_speed" in stats else 5.0
 		velocity = velocity.lerp(direction * stats.move_speed, turn_rate * delta)
-		
 		_rotate_smoothly(velocity, delta)
 		
 	else:
 		if movement_component:
 			var chase_velocity = movement_component.get_chase_velocity()
+			# Apply Acceleration
 			velocity.x = move_toward(velocity.x, chase_velocity.x, stats.acceleration * delta)
 			velocity.z = move_toward(velocity.z, chase_velocity.z, stats.acceleration * delta)
-			
 			_rotate_smoothly(velocity, delta)
 
-	# --- ATTACK CHECK ---
+	# Transition to Attack
 	var range_check = stats.attack_range if stats else 1.5
 	if distance <= range_check:
 		current_state = State.ATTACK
@@ -192,24 +236,15 @@ func _process_attack(_delta):
 		player_target = null
 		return
 
-	# Rotate smoothly towards PLAYER
 	var dir_to_player = (player_target.global_position - global_position)
 	_rotate_smoothly(dir_to_player, _delta)
 	
 	if attack_timer <= 0:
 		if combat_component:
 			combat_component.try_attack() 
-			
-			# NEW: Play attack animation defined in stats
 			if "anim_attack" in stats:
 				play_animation(stats.anim_attack)
-			
 			attack_timer = stats.attack_rate if stats else 1.0
-
-	if not player_target or not is_instance_valid(player_target):
-		current_state = State.IDLE
-		player_target = null
-		return
 
 	var distance = global_position.distance_to(player_target.global_position)
 	var range_check = stats.attack_range if stats else 1.5
@@ -218,7 +253,6 @@ func _process_attack(_delta):
 
 func _rotate_smoothly(target_direction: Vector3, delta: float):
 	var horizontal_dir = Vector3(target_direction.x, 0, target_direction.z)
-
 	if horizontal_dir.length_squared() < 0.001:
 		return
 
@@ -247,8 +281,7 @@ func take_damage(amount: float):
 	if health_component:
 		health_component.take_damage(amount)
 	
-	# NEW: Play hit animation from stats
-	if "anim_hit" in stats:
+	if current_state != State.DEAD and "anim_hit" in stats:
 		play_animation(stats.anim_hit)
 
 func _on_attack_visuals():
@@ -262,8 +295,6 @@ func _on_attack_visuals():
 func _on_hit(_amount):
 	_update_ui(health_component.current_health, health_component.max_health)
 	
-	# Only do the squash/stretch tween if we DON'T have a hit animation
-	# or if we want it to happen alongside the animation
 	if not "anim_hit" in stats or stats.anim_hit == "":
 		if visuals_container:
 			var tween = create_tween()
@@ -272,13 +303,7 @@ func _on_hit(_amount):
 
 # --- ANIMATION LOGIC ---
 func _update_animation_state():
-	if _animation_players.is_empty(): 
-		return
-	
-	# Safety check for properties in case EnemyStats is not fully updated yet
-	var has_anim_props = "anim_idle" in stats
-	
-	if not has_anim_props:
+	if _animation_players.is_empty() or not stats: 
 		return
 
 	match current_state:
@@ -291,32 +316,45 @@ func _update_animation_state():
 
 func _update_ui(current, max_hp):
 	if health_bar:
-		health_bar.update_bar(current, max_hp)
+		# FIX: Ensure we never update with 0 max_hp to avoid 0% glitch
+		var safe_max = max(1.0, max_hp)
+		health_bar.update_bar(current, safe_max)
 
 func _on_death():
+	# 1. Guard Clause: If already dead, ignore this signal.
+	if current_state == State.DEAD:
+		return
+	
 	current_state = State.DEAD
 	SignalBus.enemy_died.emit(self)
 	
-	if stats.is_flying: #the idea here is that if they die they fall downward.
-		motion_mode = CharacterBody3D.MOTION_MODE_GROUNDED
-		velocity = Vector3.DOWN
-	else:
-		velocity = Vector3.ZERO
-
-		
-		
+	# --- CRITICAL FIX: TRIGGER ANIMATION MANUALLY ---
+	# Since _physics_process no longer updates animations while dead,
+	# we MUST call this here to start the death clip.
+	_update_animation_state()
+	# -----------------------------------------------
+	
+	velocity = Vector3.ZERO
 	
 	if auto_respawn:
 		current_state = State.RESPAWNING
 		await get_tree().create_timer(respawn_time).timeout
 		respawn()
 	else:
-		# If you have a death animation, wait for it to finish?
-		# For now, just wait a moment then free
-		await get_tree().create_timer(0.75).timeout
+		# 2. Wait for the animation to play out (e.g., 1.5 seconds)
+		await get_tree().create_timer(1.5).timeout
+		
+		# 3. Disable collision
+		if collision_shape:
+			collision_shape.set_deferred("disabled", true)
+			
+		# 4. Sink into the ground
+		if visuals_container:
+			var tween = create_tween()
+			tween.tween_property(visuals_container, "position:y", -2.0, 2.0)
+			await tween.finished
+		
 		queue_free()
-	
-
 func respawn():
 	health_component.reset_health()
 	if visuals_container:
