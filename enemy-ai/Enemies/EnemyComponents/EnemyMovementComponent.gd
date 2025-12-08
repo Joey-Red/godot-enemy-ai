@@ -4,13 +4,15 @@ extends Node
 @export_group("Settings")
 @export var speed: float = 4.0
 @export var acceleration: float = 10.0 # Added to match Resource/BaseEnemy usage
-@export var aggro_range: float = 1000#15.0
+#@export var aggro_range: float = 1000 # Essentially infinite
+@export var aggro_range: float = 10.0
 @export var stop_distance: float = 1.5 # How close to get before stopping to attack
 
 @export_group("References")
 @export var actor: CharacterBody3D
 @export var nav_agent: NavigationAgent3D
-@export var deaggro_range: float = 1025.0#25 # Must be larger than aggro_range
+#@export var deaggro_range: float = 1025.0 #essentially infinite
+@export var deaggro_range: float = 15 # Must be larger than aggro_range
 
 var target: Node3D = null
 

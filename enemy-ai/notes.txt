@@ -1,8 +1,6 @@
 [rainbow]==========  TO DO   ==========[/rainbow]
 @@ todo - not get to focused, this is supposed to be general purpose for reuse.@@
 
-- ENEMY AI: right now they just follow, super basic. 
-	[ ] done
 
 - Add 'Game Juice' aka 'Game Feel' (probably another github repo)
 	[ ] Weapon Sound
