@@ -17,7 +17,7 @@ visuals_container = NodePath("VisualsContainer")
 collision_shape = NodePath("CollisionShape3D")
 
 [node name="VisualsContainer" parent="." index="0"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.45, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.225, 0)
 
 [node name="EnemyHealthbar3D" parent="." index="1"]
 texture = SubResource("ViewportTexture_y7v25")

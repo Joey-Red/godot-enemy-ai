@@ -7,7 +7,7 @@
 script = ExtResource("1_kdean")
 move_speed = 7.24
 model_scene = ExtResource("1_mu1lq")
-scale = 1.4
+scale = 1.2
 anim_idle = "CharacterArmature|Idle"
 anim_move = "CharacterArmature|Run"
 anim_attack = "CharacterArmature|Punch"
