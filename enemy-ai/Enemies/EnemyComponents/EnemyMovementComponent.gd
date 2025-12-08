@@ -24,7 +24,7 @@ func _ready():
 	nav_agent.path_desired_distance = 1.0 
 	nav_agent.target_desired_distance = 1.0
 	
-	nav_agent.debug_enabled = true
+	#nav_agent.debug_enabled = true
 
 # --- NEW FUNCTION FOR RESOURCE SYSTEM ---
 func initialize(new_speed: float, new_accel: float):

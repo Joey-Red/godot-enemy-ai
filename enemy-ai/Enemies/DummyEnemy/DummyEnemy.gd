@@ -294,10 +294,13 @@ func _process_attack(delta):
 	# Flyer Logic
 	if stats.is_flying:
 		velocity.y = move_toward(velocity.y, 0, 1.0)
-
-	# Exit Logic (Range/LOS)
+	if not player_target or not is_instance_valid(player_target):
+		current_state = State.IDLE
+		player_target = null
+		return
 	var distance = global_position.distance_to(player_target.global_position)
 	var range_check = stats.attack_range if stats else 1.5
+	
 	var lost_sight = false
 	if combat_component and not combat_component.has_line_of_sight():
 		lost_sight = true
