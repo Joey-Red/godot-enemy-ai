@@ -46,4 +46,4 @@
 
 
 - ENEMY AI: right now they just follow, super basic. 
-	[x] done
+	[x] Add enemy state 'wander' or something, 	when theyre not in combat or running at player. 	to look more natural and stuff.

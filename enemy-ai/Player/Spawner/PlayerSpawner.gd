@@ -55,7 +55,6 @@ func _spawn_player_and_ui():
 
 # This function is now triggered by the UI Button via SignalBus
 func _on_respawn_requested():
-	print("Respawn requested. Cleaning up...")
 	
 	# 1. Delete the Old HUD
 	if current_hud_instance and is_instance_valid(current_hud_instance):
